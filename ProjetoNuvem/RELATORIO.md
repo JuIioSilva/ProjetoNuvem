@@ -20,21 +20,7 @@ A arquitetura é composta por:
 
 ### Diagrama de Arquitetura
 
-```plaintext
-         Internet
-             |
-      +------+------+
-      |  InternetGW  |
-      +------+------+
-             |
-           VPC
-             |
-   +---------+----------+
-   |                    |
- SubnetServidor     SubnetCliente
-   |                    |
-[EC2 - Server]   [EC2 - Client1, Client2]
-```
+![alt text](<Pasted image 20250611202221-1.png>)
 
 ---
 
@@ -49,7 +35,7 @@ A arquitetura é composta por:
 Temas utilizados:
 
 - Infraestrutura como código
-- Redes virtuais (VPC, sub-redes, SG)
+- Redes virtuais (VPC)
 - Computação distribuída
 - Paralelismo
 
@@ -57,24 +43,37 @@ Temas utilizados:
 
 ## 4. Detalhamento da Infraestrutura como Código
 
-Trecho de criação de instância EC2 para servidor:
 
-```yaml
-EC2Server:
-  Type: AWS::EC2::Instance
-  Properties:
-    InstanceType: t2.micro
-    KeyName: !Ref KeyName
-    ImageId: ami-0c02fb55956c7d316
-    SubnetId: !Ref SubnetServer
-    SecurityGroupIds:
-      - !Ref SecurityGroupTCP
-    UserData:
-      Fn::Base64: !Sub |
-        #!/bin/bash
-        yum install -y python3
-        (salva e executa server.py com sockets)
-```
+## 🔐 Parâmetros
+
+- **KeyName**: Nome do par de chaves EC2 para acesso SSH.
+
+## 🌐 Rede
+
+- **VPC**: Rede `10.0.0.0/16` com suporte a DNS.
+- **InternetGateway + AttachGateway**: Acesso à internet.
+- **RouteTable + DefaultRoute**: Rota padrão para `0.0.0.0/0`.
+- **Subnets**:
+  - `SubnetServer`: 10.0.1.0/24 (servidor)
+  - `SubnetClient`: 10.0.2.0/24 (clientes)
+- **Associations**: Subnets ligadas à tabela de rotas.
+- **SecurityGroupTCP**: Libera tráfego TCP na porta **5000** (inbound/outbound).
+
+## 💻 EC2 Instances
+
+### 🟢 Servidor (EC2Server)
+
+- Tipo: `t2.micro`
+- Script instala Python e roda servidor TCP na porta **5000**.
+- Aceita conexões, registra mensagens em log e responde aos clientes.
+
+### 🔵 Clientes (EC2Client1 e EC2Client2)
+
+- Tipo: `t2.micro` em `SubnetClient`.
+- Conectam ao servidor usando IP público.
+- Enviam dados simulados:
+  - **Client1**: Temperatura (a cada 2s)
+  - **Client2**: Umidade (a cada 3s)
 
 Clientes usam o IP do servidor dinamicamente:
 

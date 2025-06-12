@@ -1,4 +1,4 @@
-# 📘 README — Aplicacao Distribuída com Sockets TCP na AWS
+#  Aplicacao Distribuída com Sockets TCP na AWS
 
 ## 📌 Visão Geral
 
@@ -25,8 +25,8 @@ A infraestrutura é provisionada via **AWS CloudFormation** utilizando um arquiv
 ### 1. Clone o repositório (caso aplicável)
 
 ```bash
-git clone https://github.com/seuusuario/seuprojeto.git
-cd seuprojeto
+git clone https://github.com/JuIioSilva/ProjetoNuvem.git
+cd ProjetoNuvem
 ```
 
 ### 2. Faça upload do template CloudFormation
@@ -106,7 +106,6 @@ aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,Sta
 ```
 
 - Certifique-se de que a porta 5000 esteja aberta no seu Security Group.
-- Utilize `nohup` e `&` para manter scripts rodando após login SSH.
 
 ---
 
